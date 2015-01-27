@@ -1,0 +1,185 @@
+examen.
+#include "stdafx.h"
+#include <conio.h>
+#include <iostream>
+using namespace std;
+
+void cargar_vec(int vec[],int &n)
+{
+    int i;
+    cout<<"tamanho:";
+    cin>>n;
+    for(i = 0;i<n;i++)
+    {
+        cout<<"elemento:";
+        cin>>vec[i];
+    }
+}
+
+void mostrar_vec(int vec[],int n)
+{
+    int i;
+    for(i = 0;i<n;i++)
+    {
+        cout<<""<<i<<":"<<vec[i]<<endl;
+    }
+}
+
+int impares(int n)
+{
+    int impares=0,d;
+    while(n>0)
+    {
+        d = n % 10;
+        if(d%2==1)
+            impares++;
+        n = n / 10;
+    }
+    return impares;
+}
+int digitos(int n)
+{
+    int t=0;
+    while(n>0)
+    {
+        t++;
+        n = n / 10;
+    }
+    return t;
+}
+void eliminaralgunos(int vec[],int &n)
+{
+    int i,j;
+    for(i=0;i<n;i++)
+    {
+        if(impares(vec[i])*2 >= digitos(vec[i]))
+        {
+            for(j=i;j<n;j++)
+            {
+                vec[j]=vec[j+1];
+            }
+            n--;
+            i--;
+        }
+    }
+}
+
+void preg1()
+{
+    int vec[50];
+    int n;
+    cargar_vec(vec,n);
+    eliminaralgunos(vec,n);
+    mostrar_vec(vec,n);
+    getch();
+}
+void nuevo_ordenado(int vec[],int &n,int e)
+{
+    int aux;
+    int i;
+    for(i=0;i<n;i++)
+    {
+        if(e < vec[i])
+        {
+            aux = e;
+            e = vec[i];
+            vec[i] = aux;
+        }
+    }
+    n++;
+    vec[i]=e;
+}
+
+void preg2()
+{
+    int vec[40];
+    int n=0,m,i,e;
+    cout<<"tamanho:";
+    cin>>m;
+    for(i=0;i<m;i++)
+    {
+        cout<<"elemento:";
+        cin>>e;
+        nuevo_ordenado(vec,n,e);
+        mostrar_vec(vec,n);
+    }
+    getch();
+}
+
+void unir(int A[],int n,int B[],int m,int C[],int &q)
+{
+    int i=0,j=0;
+    q=0;
+    while(i<n && j<m)
+    {
+        if(A[i] < B[j])
+        {
+            C[q] = A[i];
+            i++;
+            q++;
+        }
+        if(A[i] > B[j])
+        {
+            C[q] = B[j];
+            j++;
+            q++;
+        }
+        if(A[i] == B[j])
+        {
+            C[q] = A[i];
+            i++;
+            j++;
+            q++;
+        }
+    }
+    while(i<n)
+    {
+            C[q] = A[i];
+            i++;
+            q++;
+    }
+    while(j<m)
+    {
+            C[q] = B[j];
+            j++;
+            q++;
+    }
+}
+
+void preg3()
+{
+    int A[40],B[40],C[40];
+    int n,m,q;
+    cargar_vec(A,n);
+    cargar_vec(B,m);
+    unir(A,n,B,m,C,q);
+    mostrar_vec(C,q);
+    getch();
+}
+
+void main()
+{
+    int op;
+    do
+    {
+        cout<<"1.- Eliminar impares"<<endl;
+        cout<<"2.- Insertar ordenado"<<endl;
+        cout<<"3.- Unir vectores"<<endl;
+        cout<<"0.- Salir"<<endl;
+        cin>>op;
+        switch(op)
+        {
+        case 1:
+            preg1();
+            break;
+        case 2:
+            preg2();
+            break;
+        case 3:
+            preg3();
+            break;
+        default:
+            break;
+        }
+    }while(op!=0);
+}
