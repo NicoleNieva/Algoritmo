@@ -1,0 +1,103 @@
+#include "stdafx.h"
+#include <iostream>
+#include "stdlib.h"
+#include "conio.h"
+#include "stdafx.h"
+#include "stdio.h"
+#include <sstream>
+#include <string>
+#define TAM 30
+using namespace std;
+
+struct t_usuario{
+    int code;
+    string password;
+};
+
+void cargarvector( t_usuario v[], int n);
+void mostrarvector( t_usuario v[], int n);
+void burbuja(t_usuario v[],int tam);
+int busquedalineal(t_usuario v[],int n, int elemento);
+
+int main ()
+{t_usuario usuario[TAM];
+    string codigo,contra; 
+    int id,n,elemento,existe;
+
+    do{
+        cout<<"Introduzca cantidad usuarios: \n";
+        cin>>n;
+    }while((n<=0) || (n> TAM));
+cargarvector(usuario,n);
+mostrarvector(usuario,n);
+cout<<endl;
+burbuja(usuario,n);
+mostrarvector(usuario,n);
+cout<<endl<<"Ingrese el usuario a buscar";
+cin>>elemento;
+cout<<endl<<"Ingrese contraseña";
+cin.ignore();
+getline(cin,contra);
+existe=busquedalineal(usuario,n,elemento);
+if (existe==-1)
+  cout<<endl<<"no existe el usuario";
+else
+    if(contra.compare(usuario[existe].password)==0)
+        cout<<endl<<"contraseña valida";
+    else
+        cout<<endl<<"contraseña invalida";
+    
+ getch();
+ return 0;    
+}
+
+
+void cargarvector( t_usuario v[], int n)
+{int i;
+for(i=0;i<n;i++)
+    {
+        cout<<"Introduzca ID del usuario: \n";
+        cin>>v[i].code;
+        cout<<"Introduzca contrasenha del usuario: \n";
+        getline(cin, v[i].password);
+        getline(cin, v[i].password);
+    
+}
+}
+
+void mostrarvector( t_usuario v[], int n)
+{int i;
+cout<<"ID del usuario \t Contrasenha del usuario \n";
+for(i=0;i<n;i++)
+{cout<<v[i].code<<"\t"<<"\t"<<v[i].password;
+    cout<<"\n";
+}
+}
+
+
+void burbuja(t_usuario v[],int tam)
+{int i,j;
+ t_usuario aux;
+ for(i=0;i<tam-1;i++)
+    {for(j=i+1;j<tam;j++)
+        {if(v[i].code>v[j].code)
+            {aux=v[i];
+             v[i]=v[j];
+             v[j]=aux;
+            }
+        }
+    }
+}
+int busquedalineal(t_usuario v[],int n, int elemento)
+{
+    int i;
+    for(i=0;i<n;i++)
+    {
+        if(v[i].code==elemento)
+        {
+            return i;
+        }
+        
+    }
+    return(-1);
+}
