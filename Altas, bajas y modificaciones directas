@@ -1,0 +1,247 @@
+
+#include "stdafx.h"
+#include <iostream>
+#include "stdio.h"
+#include "conio.h"
+#include <stdlib.h>
+#include <string>
+using namespace std;
+
+struct usuario{
+	char nombre[30];
+	int id;
+	char contraseña[80];
+	char fecha_nacimiento[30];
+	char estado;
+	
+};
+
+void crearArchivo()
+{
+	FILE *ptr;
+	ptr= fopen("agenda.dat", "wb");
+	fclose(ptr);
+}
+
+void solicitarDatos(usuario *reg) 
+{
+	cout<<endl<< "Introducir Nombre Completo:";
+	do{
+		gets(reg->nombre);
+	}while(strlen(reg->nombre) == 0);
+	do{
+	cout<< "Id:";
+	cin>> reg->id;
+	}while(reg->id <=0);
+	cout<<"Contraseña:";
+	do{
+		gets(reg->contraseña);
+	}while(strlen(reg->contraseña) == 0);
+	cout<<"Fecha de nacimiento:";
+	gets(reg->fecha_nacimiento);	
+	reg->estado='N';
+	
+}
+
+void mostrarUsuario(usuario reg, int nrousuario)
+{
+	cout<<endl<< nrousuario<<".-"<< reg.nombre<< "                   "<<reg.id<<"                   "<<reg.fecha_nacimiento;
+}
+
+void adicionarUsuario(int nroReg)
+{
+
+	FILE *ptr;
+	usuario reg;
+	ptr= fopen("agenda.dat", "r+b");
+	solicitarDatos(&reg);
+	nroReg=reg.id;
+	fseek(ptr,(nroReg-1)*sizeof(reg),SEEK_SET);
+	fwrite(&reg, sizeof(struct usuario),1,ptr);
+	fclose(ptr);
+}
+
+void listarArchivo()
+{
+	FILE *ptr;
+	usuario reg;
+	int cont=0;
+	ptr= fopen("agenda.dat","rb");
+	if(ptr == NULL)
+	{
+		cout<< "EL archivo no existe...";
+	}
+	else
+	{
+		cout<<endl<<"                      ** LISTADO DE USUARIOS **";
+		cout<<endl<<" Nombre                            Id             Fecha de nacimiento     ";
+		cout<<endl<<"-----------------------------------------------------------------------";
+		fread(&reg, sizeof(struct usuario),1,ptr);
+		while(!feof(ptr))
+		{
+			if(reg.estado=='N')
+			{
+				mostrarUsuario(reg,cont+1);
+			}
+			fread(&reg, sizeof(struct usuario),1,ptr);
+			cont++;
+		}
+		fclose(ptr);
+	}
+}
+
+void buscarUsuario(int nroReg)
+{
+	FILE *ptr;
+	usuario reg;
+	ptr= fopen("agenda.dat","rb");
+	if(ptr == NULL)
+	{
+		cout<< "El archivo no existe...";
+	}
+	else
+	{
+		fseek(ptr, (nroReg-1)*sizeof(reg),SEEK_SET);
+		fread(&reg, sizeof(struct usuario),1,ptr);
+		if(feof(ptr))
+			cout<<endl<< "Usuario no existe";
+		else
+			if(reg.estado=='N')
+				mostrarUsuario(reg,nroReg);
+			else
+				cout<<endl<< "Usuario eliminado...";
+				fclose(ptr);
+	}
+
+}
+
+void modificarUsuario(int nroReg)
+{
+	FILE *ptr;
+	usuario reg;
+	ptr= fopen("agenda.dat", "r+b");
+	if(ptr== NULL)
+	{
+	cout<< "El archivo no existe...";
+	}
+else
+	{
+	fseek(ptr, (nroReg-1)*sizeof(reg),SEEK_SET);
+	fread(&reg, sizeof(struct usuario),1,ptr);
+		if(feof(ptr))
+		{
+			cout<<endl<< "Usuario no existe";
+		}
+		else
+		{
+		if(reg.estado=='N')
+		{	mostrarUsuario(reg,nroReg);
+			solicitarDatos(&reg);
+			fseek(ptr, (nroReg-1)*sizeof(reg),SEEK_SET);
+			fwrite(&reg, sizeof(struct usuario),1,ptr);
+		}
+		else
+		{
+			cout<<endl<< "Usuario eliminado...";
+			
+		}
+		fclose(ptr);
+		}
+	}
+}
+
+void eliminarUsuario(int nroReg)
+{
+	FILE *ptr;
+	usuario reg;
+	ptr= fopen("agenda.dat", "r+b");
+	if(ptr == NULL)
+	{
+	cout<< "El archivo no existe...";
+	}
+else
+	{
+	fseek(ptr, (nroReg-1)*sizeof(reg),SEEK_SET);
+	fread(&reg, sizeof(struct usuario),1,ptr);
+		if(feof(ptr))
+		{
+			cout<<endl<< "Usuario no existe";
+		}
+		else
+		{
+		if(reg.estado=='N')
+		{	mostrarUsuario(reg,nroReg);
+			reg.estado= 'S';
+			fseek(ptr, (nroReg-1)*sizeof(reg),SEEK_SET);
+			fwrite(&reg, sizeof(struct usuario),1,ptr);
+			cout<<endl<< "Usuario eliminado exitosamente";
+		}
+		else
+		{
+			cout<<endl<< "Usuario ya eliminado...";
+			
+		}
+		fclose(ptr);
+		}
+	}
+}
+
+int main()
+{int opcion;
+	do{
+		cout<<"\n****************MENU****************\n";
+		cout<<"1.- Adicionar usuario\n";
+		cout<<"2.- Listar usuarios\n";
+		cout<<"3.- Buscar usuario\n";
+		cout<<"4.- Modificar usuario\n";
+		cout<<"5.- Eliminar usuario\n";
+		cout<<"0.- Salir\n";
+		cout<<"Elegir opcion:";
+		cin>>opcion;
+		switch(opcion){
+			case 1:
+				int nro2;
+				cout<<"Ingresar el nro de registro";
+				cin>>nro2;
+				adicionarUsuario(nro2);
+				getch();
+				break;
+			case 2:
+				listarArchivo();
+				getch();
+				break;
+			case 3:
+				int nro3;
+				cout<<"Ingresar nro de registro:";
+				cin>>nro3;
+				buscarUsuario(nro3);
+				getch();
+				break;
+			case 4:
+				int nro4;
+				cout<<"Ingresar nro de registro:";
+				cin>>nro4;
+				modificarUsuario(nro4);
+				getch();
+				break;
+			case 5:
+				int nro5;
+				cout<<"Ingresar nro de registro:";
+				cin>>nro5;
+				eliminarUsuario(nro5);
+				getch();
+				break;
+			case 0:
+				break;
+			default:
+				cout<<"Opcion invalida";
+				getch();
+				break;
+		}
+		system("cls");
+	}while(opcion!=0);
+}
+
+
+
+
