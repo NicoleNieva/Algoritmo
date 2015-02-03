@@ -1,0 +1,65 @@
+#include <iostream>
+#include <iomanip>
+#include <stdio.h>
+#include "conio.h"
+#include <string>
+using namespace std;
+
+struct r_usuario
+{
+	int cuenta;
+	int id;
+	string contrasenha;
+
+};
+void creararchivo()
+{
+	FILE *aliasusuario;
+	aliasusuario=fopen("DatosUsuario.dat","w+b");
+	fclose(aliasusuario);
+}
+void adicionarregistro()
+{
+	FILE *aliasusuario;
+	r_usuario usuario;
+	cout<<"introducir numero de cuenta"<<endl;
+	cin>>usuario.cuenta;
+	cout<<"introduzca la contrasenha"<<endl;
+	cin>>usuario.contrasenha;
+	cout<<"ingrese id del usuario"<<endl;
+	cin>>usuario.id;
+	aliasusuario=fopen("DatosUsuario.dat","ab");
+	fwrite(&usuario,sizeof(r_usuario),1,aliasusuario);
+	fclose(aliasusuario);
+}
+bool buscarusuario( int cuenta)
+{ 
+	FILE *aliasusuario;
+	bool bandera=false;
+	r_usuario usuario;
+	aliasusuario=fopen("DatosUsuario.dat","wb");
+	if(aliasusuario!=NULL)
+	{
+		fread(&usuario,sizeof(r_usuario),1,aliasusuario);
+		while((feof(aliasusuario)==false)&&(bandera==false))
+		{
+			if(usuario.cuenta==cuenta)
+			{
+				fread(&usuario,sizeof(r_usuario),1,aliasusuario);
+			}
+			fclose(aliasusuario);
+		}
+	}
+	return(bandera);
+}
+
+int main()
+{
+	int cuenta;
+	creararchivo();
+	cout<<"Ingrese el numero de cuenta del usuario: "<<endl;
+	cin>>cuenta;
+	adicionarregistro();
+	getch();
+	return(0);
+}
