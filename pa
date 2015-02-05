@@ -1,0 +1,507 @@
+
+#include "stdafx.h"
+#include "stdlib.h"
+#include <iostream>
+#include <stdio.h>
+#include <iomanip>
+#include <conio.h>
+#include <math.h>
+
+using namespace std;
+
+struct usuario{
+	int id;
+	char nomusuario[30];
+	char contrasena[30];
+	int idtipo;
+	char estado;
+};/*
+struct jefe{
+	int idjefe;
+	char nombre[30];
+	int idDoc;
+	int idalum;
+	int idmat;
+};*/
+struct docentes{
+	int idDoc;
+	char nombre[30];
+	int registro;
+	int idmat;
+	int idalum;
+	char estado;
+};
+struct alumnos{
+	int idalum;
+	char nombre[30];
+	char registro[30];
+	int idmat;
+	int idnivel;
+	char estado;
+};
+/*
+struct materia{
+	int idmat;
+	char sigla[20];
+	int idtema;
+	char desarrollo[30];
+};
+struct tema{
+	int idtema;
+	char nomtema[30];
+	char ejercicios[50];
+	char ejemplos[50];
+	int idnivel;
+};
+struct nivel{
+	int idnivel;
+	int nivel;
+};
+struct examen{
+	int idtema;
+	int idexamen;
+	char preguntas[30];
+	char opciones[30];
+	char respcorrecta[30];
+};
+struct nota{
+	int idtema;
+	int idexamen;
+	int idalum;
+	int nota;
+};*/
+void solicitarDatos(alumnos*reg) {
+	cout<<endl<< "Introducir Nombre Completo:";
+	do{
+		gets(reg->nombre);
+	}while(strlen(reg->nombre) == 0);
+	do{
+	cout<< "Ingresar el id del alumno:";
+	cin>> reg->idalum;
+	}while(reg->idalum <=0);
+	cout<<"Ingresar el numero de registro: ";
+	cin>>reg->registro;
+	reg->estado='N';
+}
+void adicionarAlumno(){
+	int n;
+	FILE *ptr;
+	alumnos reg;
+	ptr= fopen("Alumno.dat", "a+b");
+	if(ptr==NULL){
+		ptr= fopen("Alumno.dat", "w+b");
+	}
+	cout<<"Ingresar el id:";
+	cin>>n;
+	int dir_fisica=n-1*sizeof(reg); 
+	fseek(ptr,dir_fisica,SEEK_SET); 
+	fread(&reg,sizeof(reg),1,ptr); 
+	if(reg.idalum){
+		cout <<endl<< "ID duplicado !!!";
+		fclose(ptr);
+		getch();
+		return;
+	}
+	solicitarDatos(&reg);
+	n=reg.idalum;
+	fseek(ptr,(n-1)*sizeof(reg),SEEK_SET);
+	fwrite(&reg, sizeof(struct alumnos),1,ptr);
+	fclose (ptr);
+}
+
+void listarArchivo(){
+	FILE *ptr;
+	alumnos reg;
+	ptr= fopen("Alumno.dat","rb");
+	if(ptr == NULL)
+	{
+		cout<< "EL archivo no existe...";
+	}
+	else
+	{
+		cout<<endl<<"                      ** LISTADO DE ALUMNOS **";
+		cout<<endl<<"-----------------------------------------------------------------------";
+		cout<<endl<<"  ID			Registro			Nombre     ";
+		cout<<endl<<"-----------------------------------------------------------------------";
+		fread(&reg, sizeof(struct alumnos),1,ptr);
+		while(!feof(ptr))
+		{
+			if( reg.estado =='N')
+			{
+				cout<<endl<<setw(4)<<reg.idalum<<setw(30)<<reg.registro<<setw(30)<<reg.nombre;
+			}
+			fread(&reg, sizeof(struct alumnos),1,ptr);
+		
+		}
+		cout<<endl<<"-----------------------------------------------------------------------";
+		fclose(ptr);
+	}
+}
+void solicitarDatos(docentes*reg) {
+	cout<<endl<< "Introducir Nombre Completo:";
+	do{
+		gets(reg->nombre);
+	}while(strlen(reg->nombre) == 0);
+	do{
+	cout<< "Ingresar el id del docente:";
+	cin>> reg->idDoc;
+	}while(reg->idDoc <=0);
+	cout<<"Ingresar el numero de registro: ";
+	cin>>reg->registro;
+	reg->estado='N';
+}
+void adicionarDocente(){
+	int n;
+	FILE *ptr;
+	docentes reg;
+	ptr= fopen("Docente.dat", "a+b");
+	if(ptr==NULL){
+		ptr= fopen("Docente.dat", "w+b");
+	}
+	cout<<"Ingresar el id:";
+	cin>>n;
+	int dir_fisica=n-1*sizeof(reg); 
+	fseek(ptr,dir_fisica,SEEK_SET); 
+	fread(&reg,sizeof(reg),1,ptr); 
+	if(reg.idDoc==n){
+		cout <<endl<< "ID duplicado !!!";
+		fclose(ptr);
+		getch();
+		return;
+	}
+	solicitarDatos(&reg);
+	n=reg.idDoc;
+	fseek(ptr,(n-1)*sizeof(reg),SEEK_SET);
+	fwrite(&reg, sizeof(struct docentes),1,ptr);
+	fclose (ptr);
+}
+
+void listarArchivoDocente(){
+	FILE *ptr;
+	docentes reg;
+	ptr= fopen("Docente.dat","rb");
+	if(ptr == NULL)
+	{
+		cout<< "EL archivo no existe...";
+	}
+	else
+	{
+		cout<<endl<<"                      ** LISTADO DE Docentes **";
+		cout<<endl<<"-----------------------------------------------------------------------";
+		cout<<endl<<"  ID			Registro			  Nombre     ";
+		cout<<endl<<"-----------------------------------------------------------------------";
+		fread(&reg, sizeof(struct docentes),1,ptr);
+		while(!feof(ptr))
+		{
+			if( reg.estado =='N')
+			{
+				cout<<endl<<setw(4)<<reg.idDoc<<setw(25)<<reg.registro<<setw(40)<<reg.nombre;
+			}
+			fread(&reg, sizeof(struct docentes),1,ptr);
+		
+		}
+		cout<<endl<<"-----------------------------------------------------------------------";
+		fclose(ptr);
+	}
+}
+
+
+
+void menuDocente()
+{
+	int opc,n;
+	do{
+		
+		cout<<"\n****************MENU PARA JEFE****************\n";
+		cout<<endl<<"1.- Adicionar Docente";
+		cout<<endl<<"2.- Listar Docentes";
+		cout<<endl<<"3.- Buscar usuario";
+		cout<<endl<<"4.- Modificar usuario";
+		cout<<endl<<"5.- Eliminar usuario";
+		cout<<endl<<"0.- Salir";
+		cout<<endl<<"Elegir opcion:";
+		cin>>opc;
+		switch(opc){
+			case 1:
+				adicionarDocente();
+				break;
+			case 2:
+				listarArchivoDocente();
+				break;
+		
+			case 0:
+				cout<<"Salir..";
+				break;
+			default:
+				cout<<"Opcion invalida";
+				break;
+		}
+		getch();
+		system("cls");
+		
+	}while(opc!=0);
+	
+}
+
+void menuAlumnos()
+{
+	int opc,n;
+	do{
+		
+		cout<<"\n****************MENU PARA DOCENTES****************\n";
+		cout<<endl<<"1.- Adicionar Alumno";
+		cout<<endl<<"2.- Listar Alumno";
+		cout<<endl<<"3.- Buscar usuario";
+		cout<<endl<<"4.- Modificar usuario";
+		cout<<endl<<"5.- Eliminar usuario";
+		cout<<endl<<"0.- Salir";
+		cout<<endl<<"Elegir opcion:";
+		cin>>opc;
+		switch(opc){
+			case 1:
+				adicionarAlumno();
+				break;
+			case 2:
+				listarArchivo();
+				break;
+		
+			case 0:
+				cout<<"Salir..";
+				break;
+			default:
+				cout<<"Opcion invalida";
+				break;
+		}
+		getch();
+		system("cls");
+		
+	}while(opc!=0);
+	
+}
+
+
+/*
+void adicionarUsuario(){
+	FILE*ptr;
+	usuario reg;
+	cout<<"\nIngresar el id del usuario: ";
+	cin>> reg.id;
+	cout<<endl<<"Introducir nombre de usuario: ";
+	do{
+		gets(reg.nomusuario);
+	}while(strlen(reg.nomusuario)==0);
+	ptr=fopen("Usuario.dat","ab");
+	fwrite(&reg,sizeof(reg),1,ptr);
+	fclose(ptr);
+}
+
+void mostrarUsuario(){
+	FILE*ptr;
+	usuario reg;
+	ptr=fopen("Usuario.dat","rb");
+	if(ptr==NULL){
+		cout<<"el archivo no existe";
+	}else{
+		cout<<endl<<setw(30)<<"-------------------------------------------------------";
+        cout<<endl<<setw(20)<<" IdUsuario              Nombre de Usuario              Contraseña         ";
+        cout<<endl<<setw(5)<<"-------------------------------------------------------";
+		fread(&reg,sizeof(reg),1,ptr);
+		while(!feof(ptr)){
+			
+			cout<<endl<<setw(5)<<reg.id<<setw(35)<<reg.nomusuario<<setw(35)<<reg.contrasena;
+			fread(&reg,sizeof(reg),1,ptr);
+		}
+		fclose(ptr);
+		 cout<<endl<<setw(60)<<"-------------------------------------------------------";
+	}
+}
+void adicionarAlumno(){
+	FILE*ptr;
+	alumnos reg;
+	cout<<"\nIngresar el id del alumno: ";
+	cin>> reg.idalum;
+	cout<<endl<<"Introducir nombre y apellido del alumno: ";
+	do{
+		gets(reg.nombre);
+	}while(strlen(reg.nombre)==0);
+	cout<<endl<<"Introducir numero de registro: ";
+	cin>>reg.registro;
+	ptr=fopen("Alumnos.dat","ab");
+	fwrite(&reg,sizeof(reg),1,ptr);
+	fclose(ptr);
+}
+
+void mostrarAlumno(){
+	FILE*ptr;
+	regProyecto reg;
+	ptr=fopen("proyecto.dat","rb");
+	if(ptr==NULL){
+		cout<<"el archivo no existe";
+	}else{
+		cout<<endl<<setw(30)<<"-------------------------------------------------------";
+        cout<<endl<<setw(20)<<" IdProyecto              Nombre						   ";
+        cout<<endl<<setw(5)<<"-------------------------------------------------------";
+		fread(&reg,sizeof(reg),1,ptr);
+		while(!feof(ptr)){
+			
+			cout<<endl<<setw(5)<<reg.idProyecto<<setw(35)<<reg.nombre;
+			fread(&reg,sizeof(reg),1,ptr);
+		}
+		fclose(ptr);
+		 cout<<endl<<setw(60)<<"-------------------------------------------------------";
+	}
+}
+void adicionarDocente(){
+	FILE*ptr;
+	regProyecto reg;
+	cout<<"\nIngresar el id del proyecto: ";
+	cin>> reg.idProyecto;
+	cout<<endl<<"Introducir nombre: ";
+	do{
+		gets(reg.nombre);
+	}while(strlen(reg.nombre)==0);
+	ptr=fopen("proyecto.dat","ab");
+	fwrite(&reg,sizeof(reg),1,ptr);
+	fclose(ptr);
+}
+
+void mostrarDocente(){
+	FILE*ptr;
+	regProyecto reg;
+	ptr=fopen("proyecto.dat","rb");
+	if(ptr==NULL){
+		cout<<"el archivo no existe";
+	}else{
+		cout<<endl<<setw(30)<<"-------------------------------------------------------";
+        cout<<endl<<setw(20)<<" IdProyecto              Nombre						   ";
+        cout<<endl<<setw(5)<<"-------------------------------------------------------";
+		fread(&reg,sizeof(reg),1,ptr);
+		while(!feof(ptr)){
+			
+			cout<<endl<<setw(5)<<reg.idProyecto<<setw(35)<<reg.nombre;
+			fread(&reg,sizeof(reg),1,ptr);
+		}
+		fclose(ptr);
+		 cout<<endl<<setw(60)<<"-------------------------------------------------------";
+	}
+}
+void adicionarTema(){
+	FILE*ptr;
+	regProyecto reg;
+	cout<<"\nIngresar el id del proyecto: ";
+	cin>> reg.idProyecto;
+	cout<<endl<<"Introducir nombre: ";
+	do{
+		gets(reg.nombre);
+	}while(strlen(reg.nombre)==0);
+	ptr=fopen("proyecto.dat","ab");
+	fwrite(&reg,sizeof(reg),1,ptr);
+	fclose(ptr);
+}
+
+void mostrarTema(){
+	FILE*ptr;
+	regProyecto reg;
+	ptr=fopen("proyecto.dat","rb");
+	if(ptr==NULL){
+		cout<<"el archivo no existe";
+	}else{
+		cout<<endl<<setw(30)<<"-------------------------------------------------------";
+        cout<<endl<<setw(20)<<" IdProyecto              Nombre						   ";
+        cout<<endl<<setw(5)<<"-------------------------------------------------------";
+		fread(&reg,sizeof(reg),1,ptr);
+		while(!feof(ptr)){
+			
+			cout<<endl<<setw(5)<<reg.idProyecto<<setw(35)<<reg.nombre;
+			fread(&reg,sizeof(reg),1,ptr);
+		}
+		fclose(ptr);
+		 cout<<endl<<setw(60)<<"-------------------------------------------------------";
+	}
+}*/
+void solicitarDatos(usuario*reg) {
+	cout<<endl<< "Introducir Nombre de usuario:";
+	do{
+		gets(reg->nomusuario);
+	}while(strlen(reg->nomusuario) == 0);
+	cout<<"Ingrese la contrasena: ";
+	do{
+		gets(reg->contrasena);
+	}while(strlen(reg->contrasena) == 0);
+	cout<<"Ingrese el id del usuario: ";
+	cin>>reg->id;
+	reg->estado='N';
+}
+void adicionarUsuario(){
+	int n;
+	FILE *ptr;
+	usuario reg;
+	ptr= fopen("Usuario.dat", "a+b");
+	if(ptr==NULL){
+		ptr= fopen("Usuario.dat", "w+b");
+	}
+	cout<<"Ingresar el id:";
+	cin>>n;
+	int dir_fisica=n-1*sizeof(reg); 
+	fseek(ptr,dir_fisica,SEEK_SET); 
+	fread(&reg,sizeof(reg),1,ptr); 
+	if(reg.id==n){
+		cout <<endl<< "ID duplicado !!!";
+		fclose(ptr);
+		getch();
+		return;
+	}
+	solicitarDatos(&reg);
+	n=reg.id;
+	fseek(ptr,(n-1)*sizeof(reg),SEEK_SET);
+	fwrite(&reg, sizeof(struct usuario),1,ptr);
+	fclose (ptr);
+}
+
+void main(){
+	int opc;
+	usuario reg;
+	do{
+		
+		cout<<"\n****************USUARIO****************\n";
+		cout<<endl<<"1.- Crear usuario";
+		cout<<endl<<"2.- Ingrese el tipo de id";
+		cout<<endl<<"0.- Salir";
+		cout<<endl<<"Elegir opcion:";
+		cin>>opc;
+		switch(opc){
+			case 1:
+				adicionarUsuario();
+				break;
+			case 2:
+				cout<<"Ingrese el tipo del id:";
+				cin>>reg.idtipo;
+				if(reg.idtipo==1){
+					menuAlumnos();
+					break;
+				}
+				else{
+					if(reg.idtipo==2){
+						menuDocente();
+						break;
+					}else{
+						if((reg.idtipo!=1)&&(reg.idtipo!=2)){
+							cout<<"NULL";
+							break;
+						}
+					}
+				}
+				
+			case 0:
+				cout<<"Salir..";
+				break;
+			default:
+				cout<<"Opcion invalida";
+				break;
+		}
+		getch();
+		system("cls");
+		
+	}while(opc!=0);
+	
+}
