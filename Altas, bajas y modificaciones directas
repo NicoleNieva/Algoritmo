@@ -5,10 +5,11 @@
 #include "conio.h"
 #include <stdlib.h>
 #include <string>
+
 using namespace std;
 
 struct usuario{
-	char nombre[30];
+	char nombre[30]; 
 	int id;
 	char contraseña[80];
 	char fecha_nacimiento[30];
@@ -51,7 +52,7 @@ void mostrarUsuario(usuario reg, int nrousuario)
 void adicionarUsuario(int nroReg)
 {
 
-	FILE *ptr;
+	FILE *ptr;//puntero
 	usuario reg;
 	ptr= fopen("agenda.dat", "r+b");
 	solicitarDatos(&reg);
